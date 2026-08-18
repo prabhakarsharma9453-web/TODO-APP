@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, X } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { createTask, getTask, updateTask } from '../api';
 
 export default function NewTask() {
@@ -41,7 +42,13 @@ export default function NewTask() {
 
   const handleSubmit = async () => {
     if (!formData.title || !formData.date || !formData.timeStart || !formData.timeEnd) {
-      alert('Please fill out required fields (Title, Date, Start & End time)');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Fields',
+        text: 'Please fill out all required fields (Title, Date, Start & End time)',
+        confirmButtonColor: '#4361ee',
+        customClass: { popup: 'rounded-[8px]' }
+      });
       return;
     }
 
@@ -59,13 +66,32 @@ export default function NewTask() {
     try {
       if (editId) {
         await updateTask(editId, taskPayload);
+        await Swal.fire({
+          icon: 'success',
+          title: 'Task Updated!',
+          showConfirmButton: false,
+          timer: 1500,
+          customClass: { popup: 'rounded-[8px]' }
+        });
       } else {
         await createTask(taskPayload);
+        await Swal.fire({
+          icon: 'success',
+          title: 'Task Created!',
+          showConfirmButton: false,
+          timer: 1500,
+          customClass: { popup: 'rounded-[8px]' }
+        });
       }
       navigate('/home');
     } catch (err) {
       console.error('Error saving task', err);
-      alert('Failed to save task');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Failed to save task',
+        customClass: { popup: 'rounded-[8px]' }
+      });
     }
   };
 

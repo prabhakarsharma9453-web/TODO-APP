@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Check, Plus, Trash2, Edit3, Settings, Bell, X } from 'lucide-react';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { getTasks, updateTask, deleteTask } from '../api';
 
 export default function Home() {
@@ -50,12 +51,36 @@ export default function Home() {
   };
 
   const handleDelete = async (id) => {
-    if(window.confirm('Delete this task?')) {
+    const result = await Swal.fire({
+      title: 'Delete Task?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e5383b',
+      cancelButtonColor: '#b0b0b0',
+      confirmButtonText: 'Yes, delete it!',
+      customClass: {
+        popup: 'rounded-[8px]'
+      }
+    });
+
+    if (result.isConfirmed) {
       setTasks(tasks.filter(t => t._id !== id));
       try {
         await deleteTask(id);
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'Your task has been deleted.',
+          icon: 'success',
+          showConfirmButton: false,
+          timer: 1500,
+          customClass: {
+            popup: 'rounded-[8px]'
+          }
+        });
       } catch (err) {
         fetchTasks();
+        Swal.fire('Error!', 'Failed to delete task.', 'error');
       }
     }
   };
