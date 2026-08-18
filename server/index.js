@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import https from 'https';
 import taskRoutes from './routes/tasks.js';
 
 dotenv.config();
@@ -24,6 +25,13 @@ mongoose.connect(MONGO_URI)
     console.log('Connected to MongoDB');
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
+      
+      // Ping self every 14 minutes to keep Render free tier awake
+      setInterval(() => {
+        https.get('https://todo-app-kks3.onrender.com/api/tasks').on('error', (err) => {
+          console.error('Ping error:', err.message);
+        });
+      }, 14 * 60 * 1000);
     });
   })
   .catch((err) => {

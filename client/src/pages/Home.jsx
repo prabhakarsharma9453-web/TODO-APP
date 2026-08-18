@@ -22,7 +22,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchTasks();
-  }, [selectedDate, searchQuery]);
+  }, [selectedDate, searchQuery, location.pathname]);
 
   const fetchTasks = async () => {
     try {
